@@ -7,8 +7,8 @@ canvas.height = window.innerHeight;
 let player = {
   x: canvas.width / 2,
   y: canvas.height / 2,
-  width: 100,
-  height: 65,
+  width: 90,
+  height: 85,
   speed: 5,
   dx: 0,
   dy: 0,
@@ -47,7 +47,10 @@ const enemyImage = new Image();
 enemyImage.src = 'textures/enemy.webp';
 
 const menuBackgroundImage = new Image();
-menuBackgroundImage.src = './textures/menu_background.svg';
+menuBackgroundImage.src = './textures/backdroptypeshit.jpg';
+
+const otherBackgroundImage = new Image();
+otherBackgroundImage.src = './textures/menu_background.svg';
 
 const swordImage = new Image();
 swordImage.src = './textures/sword.png';
@@ -366,7 +369,7 @@ function showAchievementPopup(achievement) {
 }
 
 function drawAchievementsScreen() {
-    const pattern = ctx.createPattern(menuBackgroundImage, 'repeat');
+    const pattern = ctx.createPattern(otherBackgroundImage, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -673,9 +676,7 @@ let upgrades = {
 
 function drawTitleScreen() {
   // Draw the background pattern
-  const pattern = ctx.createPattern(menuBackgroundImage, 'repeat');
-  ctx.fillStyle = pattern;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(menuBackgroundImage, 0, 0, canvas.width, canvas.height);
   
   // Add a semi-transparent overlay for better text readability
   ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -706,7 +707,7 @@ function drawTitleScreen() {
 
 function drawShop() {
     // Draw the background pattern
-    const pattern = ctx.createPattern(menuBackgroundImage, 'repeat');
+    const pattern = ctx.createPattern(otherBackgroundImage, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -797,9 +798,9 @@ function drawCharacterSelectScreen() {
         const charImg = new Image();
         charImg.src = char.image;
 
-        ctx.drawImage(charImg, startX, 200, 100, 65);
+        ctx.drawImage(charImg, startX, 200, 100, 95);
         ctx.font = '30px Arial';
-        ctx.fillText(key.charAt(0).toUpperCase() + key.slice(1), startX + 50, 300);
+        ctx.fillText(key.charAt(0).toUpperCase() + key.slice(1), startX + 50, 310);
         ctx.font = '20px Arial';
         let yOffset = 350;
         ctx.fillText(`Damage: ${char.damage}`, startX + 50, yOffset);
@@ -1183,7 +1184,7 @@ function spawnBoss() {
 
 function drawLevelUpScreen() {
     // Draw the background pattern
-    const pattern = ctx.createPattern(menuBackgroundImage, 'repeat');
+    const pattern = ctx.createPattern(otherBackgroundImage, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -1267,7 +1268,7 @@ function keyUp(e) {
 }
 
 function drawInventory() {
-    const pattern = ctx.createPattern(menuBackgroundImage, 'repeat');
+    const pattern = ctx.createPattern(otherBackgroundImage, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
