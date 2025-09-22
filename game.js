@@ -104,7 +104,7 @@ const enemies = [];
 const spawnMarkers = [];
 let round = 1;
 let enemiesToSpawn = 5;
-let spawnInterval = 3000; // Initial spawn interval in ms
+let spawnInterval = 3000;
 let bossActive = false;
 
 let shopOpen = false;
@@ -113,8 +113,7 @@ let draggingItem = null;
 let dragStartX = 0;
 let dragStartY = 0;
 let dragItemOriginalSlot = null;
-let gameState = 'title'; // title, game, paused, load, controls, characterSelect, levelUp, inventory
-
+let gameState = 'title'; 
 
 let mouse = {
     x: 0,
@@ -131,7 +130,6 @@ let saveMessage = {
     timer: 0
 };
 
-// Save game state
 function saveGame() {
     const gameData = {
         player: player,
@@ -147,7 +145,6 @@ function saveGame() {
     localStorage.setItem('gameData', JSON.stringify(gameData));
 }
 
-// Load game state
 function loadGame() {
     const savedData = localStorage.getItem('gameData');
     if (savedData) {
@@ -194,7 +191,6 @@ function drawEnemies() {
     for (const enemy of enemies) {
         ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.width, enemy.height);
         if (enemy.isBoss) {
-            // Draw boss health bar at top of screen
             const barWidth = canvas.width / 2;
             const barHeight = 20;
             const barX = canvas.width / 4;
@@ -210,7 +206,6 @@ function drawEnemies() {
             ctx.textAlign = 'center';
             ctx.fillText('BOSS', barX + barWidth / 2, barY + barHeight - 4);
         } else {
-            // Draw regular enemy health bar
             const healthBarWidth = enemy.width;
             const healthBarHeight = 5;
             const healthBarX = enemy.x;
@@ -255,8 +250,6 @@ function drawNotifications() {
             notifications.splice(i, 1);
         }
     }
-            
-            // Draw regular enemy health bar
             ctx.fillStyle = 'red';
             ctx.fillRect(enemy.x, enemy.y - 10, enemy.width, 5);
             ctx.fillStyle = 'green';
@@ -265,7 +258,6 @@ function drawNotifications() {
 
 
 function drawPlayer() {
-// Draw Mana bar
   if (player.maxMana > 0) {
       ctx.fillStyle = 'gray';
       ctx.fillRect(player.x, player.y - 10, player.width, 5);
@@ -274,14 +266,12 @@ function drawPlayer() {
   }
 
   ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
-  // Draw health bar
-  const healthBarMaxWidth = player.width; // Or a fixed value like 50
+  const healthBarMaxWidth = player.width; 
   ctx.fillStyle = 'red';
   ctx.fillRect(player.x, player.y - 17, healthBarMaxWidth, 5);
   ctx.fillStyle = 'green';
   ctx.fillRect(player.x, player.y - 17, Math.min(healthBarMaxWidth, healthBarMaxWidth * (player.health / player.maxHealth)), 5);
 
-  // Draw EXP bar
   const expNeeded = getExpNeededForLevel(player.level);
   ctx.fillStyle = 'gray';
   ctx.fillRect(player.x, player.y - 24, player.width, 5);
@@ -311,35 +301,25 @@ function newPos() {
 }
 
 function detectWalls() {
-  // Left wall
   if (player.x < 0) {
     player.x = 0;
   }
-
-  // Right wall
   if (player.x + player.width > canvas.width) {
     player.x = canvas.width - player.width;
   }
-
-  // Top wall
   if (player.y < 0) {
     player.y = 0;
   }
-
-  // Bottom wall
   if (player.y + player.height > canvas.height) {
     player.y = canvas.height - player.height;
   }
 }
 
 function checkAchievements() {
-    // Damage achievement
     if (player.damage >= 25 && !achievements.damage_1.unlocked) {
         achievements.damage_1.unlocked = true;
         showAchievementPopup(achievements.damage_1);
     }
-
-    // Round achievements
     if (round > 5 && !achievements.round_5.unlocked) {
         achievements.round_5.unlocked = true;
         showAchievementPopup(achievements.round_5);
@@ -364,7 +344,7 @@ function showAchievementPopup(achievement) {
         name: achievement.name,
         description: achievement.description,
         icon: achievement.icon,
-        timer: 300 // 5 seconds
+        timer: 300 
     });
 }
 
@@ -421,7 +401,7 @@ function drawAchievementsScreen() {
 function update() {
     checkAchievements();
   if (player.maxMana > 0 && player.mana < player.maxMana) {
-      player.mana += player.manaRechargeRate / 60; // per frame, so divide by 60 for per second
+      player.mana += player.manaRechargeRate / 60;
       if (player.mana > player.maxMana) {
           player.mana = player.maxMana;
       }
@@ -439,7 +419,6 @@ function update() {
     return;
   }
 
-  // Check for hover over player
   if (mouse.x > player.x && mouse.x < player.x + player.width &&
       mouse.y > player.y && mouse.y < player.y + player.height) {
       showStats = true;
@@ -484,15 +463,12 @@ function update() {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    // Back to Title button
     if (mouseY > canvas.height / 2 + 30 && mouseY < canvas.height / 2 + 70 &&
         mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
         gameState = 'title';
         return;
     }
   } else if (gameState === 'characterSelect') {
-    // Damage character selected
-    // Damage character selected
     const damageCharX = canvas.width / 4 - 50;
     const damageCharY = 200;
     const charWidth = 100;
@@ -509,7 +485,6 @@ function update() {
         startNewGame();
     }
 
-    // Tank character selected
     const tankCharX = canvas.width * 3 / 4 - 50;
     const tankCharY = 200;
     if (mouseY > tankCharY && mouseY < tankCharY + charHeight && mouseX > tankCharX && mouseX < tankCharX + charWidth) {
@@ -523,7 +498,6 @@ function update() {
         playerImage.src = charData.image;
         startNewGame();
     }
-
     return;
   }
 
@@ -576,7 +550,7 @@ function update() {
         spawnBoss();
     } else {
         enemiesToSpawn += 2;
-        spawnInterval = Math.max(100, spawnInterval - 50); // Decrease interval, with a minimum of 100ms
+        spawnInterval = Math.max(100, spawnInterval - 50);
         spawnEnemies();
     }
     saveGame();
@@ -619,15 +593,19 @@ function movePlayer() {
 }
 
 function drawPauseScreen() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'white';
-    ctx.font = '50px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Paused', canvas.width / 2, canvas.height / 2 - 50);
+ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = 'white';
+ctx.font = '50px Arial';
+ctx.textAlign = 'center';
+ctx.fillText('Paused', canvas.width / 2, canvas.height / 2 - 50);
 
-    ctx.font = '30px Arial';
-    ctx.fillText('Back to Title', canvas.width / 2, canvas.height / 2 + 50);
+ctx.font = '15px Arial';
+ctx.fillText('So like is the game hard? 😁 ', canvas.width / 2, canvas.height / 2 - 20);
+
+ctx.font = '45px Arial';
+ctx.fillText('Back to Title', canvas.width / 2, canvas.height / 2 + 50);
+
 }
 
 function keyDown(e) {
@@ -675,10 +653,7 @@ let upgrades = {
 };
 
 function drawTitleScreen() {
-  // Draw the background pattern
   ctx.drawImage(menuBackgroundImage, 0, 0, canvas.width, canvas.height);
-  
-  // Add a semi-transparent overlay for better text readability
   ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -706,22 +681,18 @@ function drawTitleScreen() {
 }
 
 function drawShop() {
-    // Draw the background pattern
     const pattern = ctx.createPattern(otherBackgroundImage, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Add a semi-transparent overlay
+
     ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Title
     ctx.fillStyle = '#eee';
     ctx.font = '45px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Upgrades', canvas.width / 2, 80);
 
-    // Coins
     ctx.font = '25px Arial';
     ctx.color = 'blue';
     ctx.fillText(`Coins: ${player.coins}`, canvas.width / 2, 130);
@@ -729,12 +700,10 @@ function drawShop() {
     const itemYStart = 220;
     const itemYGap = 100;
 
-    // Upgrade Items
     drawShopItem(`Increase Speed`, `Cost: ${upgrades.speed.cost}`, itemYStart);
     drawShopItem(`Increase Max Health`, `Cost: ${upgrades.health.cost}`, itemYStart + itemYGap);
     drawShopItem(`Increase Damage`, `Cost: ${upgrades.damage.cost}`, itemYStart + itemYGap * 2);
 
-    // Instructions
     ctx.font = '20px Arial';
     ctx.fillText('Press B to close', canvas.width / 2, canvas.height - 20);
 }
@@ -744,19 +713,16 @@ function drawShopItem(name, cost, y) {
     const itemWidth = 400;
     const x = canvas.width / 2 - itemWidth / 2;
 
-    // Item Box
     ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
     ctx.fillRect(x, y - 50, itemWidth, itemHeight);
     ctx.strokeStyle = '#eee';
     ctx.strokeRect(x, y - 50, itemWidth, itemHeight);
 
-    // Item Name
     ctx.fillStyle = '#eee';
     ctx.font = '28px Arial';
     ctx.textAlign = 'center';
     ctx.fillText(name, canvas.width / 2, y - 10);
 
-    // Item Cost
     ctx.font = '22px Arial';
     ctx.fillText(cost, canvas.width / 2, y + 20);
 }
@@ -788,7 +754,6 @@ function drawCharacterSelectScreen() {
     ctx.font = '50px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Choose Your Character', canvas.width / 2, 100);
-    // Damage Character
     const charKeys = Object.keys(characters);
     const totalWidth = charKeys.length * 150 + (charKeys.length - 1) * 50;
     let startX = canvas.width / 2 - totalWidth / 2;
@@ -850,14 +815,12 @@ function shoot(event) {
   const mouseY = event.clientY - rect.top;
 
   if (gameState === 'title') {
-    // New Game button
     if (mouseY > canvas.height / 2 - 20 && mouseY < canvas.height / 2 + 20 &&
         mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
         gameState = 'characterSelect';
         return;
     }
     
-    // Continue button (if save exists)
     if (localStorage.getItem('gameData') !== null) {
         if (mouseY > canvas.height / 2 + 30 && mouseY < canvas.height / 2 + 70 &&
             mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
@@ -868,13 +831,10 @@ function shoot(event) {
             return;
         }
     }
-
-    // Controls button
-    // The text alignment was causing issues, so we'll use fixed coordinates for click detection
-    const controlsTextWidth = ctx.measureText('Controls').width; // Measure text width for accurate click area
-    const controlsX = canvas.width / 1.05 - controlsTextWidth; // Adjust X based on right alignment
-    const controlsY = canvas.height - 50; // Y position of the text
-    const controlsHeight = 30; // Approximate height of the text
+    const controlsTextWidth = ctx.measureText('Controls').width;
+    const controlsX = canvas.width / 1.05 - controlsTextWidth;
+    const controlsY = canvas.height - 50;
+    const controlsHeight = 30;
 
     if (mouseY > controlsY - controlsHeight && mouseY < controlsY &&
         mouseX > controlsX && mouseX < canvas.width / 1.05) {
@@ -883,14 +843,12 @@ function shoot(event) {
     }
 
   } else if (gameState === 'paused') {
-    // Back to Title button
     if (mouseY > canvas.height / 2 + 30 && mouseY < canvas.height / 2 + 70 &&
         mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
         gameState = 'title';
         return;
     }
   } else if (gameState === 'controls') {
-    // Back button
     if (mouseY > canvas.height - 70 && mouseY < canvas.height - 30 &&
         mouseX > canvas.width / 2 - 50 && mouseX < canvas.width / 2 + 50) {
         gameState = 'title';
@@ -939,7 +897,6 @@ function shoot(event) {
       const itemYStart = 220;
       const itemYGap = 100;
 
-      // Speed upgrade purchase
       if (mouseY > itemYStart - 50 && mouseY < itemYStart - 50 + itemHeight && mouseX > itemX && mouseX < itemX + itemWidth) {
         if (player.coins >= upgrades.speed.cost) {
           player.coins -= upgrades.speed.cost;
@@ -948,7 +905,6 @@ function shoot(event) {
         }
       }
 
-      // Health upgrade purchase
       if (mouseY > itemYStart + itemYGap - 50 && mouseY < itemYStart + itemYGap - 50 + itemHeight && mouseX > itemX && mouseX < itemX + itemWidth) {
         if (player.coins >= upgrades.health.cost) {
           player.coins -= upgrades.health.cost;
@@ -958,7 +914,6 @@ function shoot(event) {
         }
       }
 
-      // Damage upgrade purchase
       if (mouseY > itemYStart + itemYGap * 2 - 50 && mouseY < itemYStart + itemYGap * 2 - 50 + itemHeight && mouseX > itemX && mouseX < itemX + itemWidth) {
           if (player.coins >= upgrades.damage.cost) {
               player.coins -= upgrades.damage.cost;
@@ -975,7 +930,6 @@ function shoot(event) {
               return;
           }
       }
-      // Bullet shooting logic
       const angle = Math.atan2(mouseY - (player.y + player.height / 2), mouseX - (player.x + player.width / 2));
 
       const bullet = {
@@ -1028,7 +982,7 @@ function spawnEnemies() {
                 maxHealth: 5 * round
             };
             enemies.push(enemy);
-        }, 3000); // 2 second delay before enemy appears
+        }, 3000);
 
         spawnedCount++;
         setTimeout(spawnSingleEnemy, spawnInterval);
@@ -1042,12 +996,10 @@ function updateEnemies() {
         const enemy = enemies[i];
 
         if (!enemy.isBoss) {
-            // Regular enemy movement
             const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
             enemy.x += Math.cos(angle) * 1;
             enemy.y += Math.sin(angle) * 1;
-        } else if (Date.now() - enemy.lastShot > 1000) { // Boss shoots every second
-            // Boss shooting logic
+        } else if (Date.now() - enemy.lastShot > 1000) {
             const angle = Math.atan2(
                 player.y + player.height/2 - (enemy.y + enemy.height/2),
                 player.x + player.width/2 - (enemy.x + enemy.width/2)
@@ -1062,8 +1014,6 @@ function updateEnemies() {
             bossProjectiles.push(projectile);
             enemy.lastShot = Date.now();
         }
-
-        // Check for collision with player
         if (
             player.x < enemy.x + enemy.width &&
             player.x + player.width > enemy.x &&
@@ -1071,7 +1021,7 @@ function updateEnemies() {
             player.y + player.height > enemy.y
         ) {
             if (enemy.isBoss) {
-                player.health = 0; // Instant death on boss collision
+                player.health = 0;
             } else {
                 const damageTaken = Math.max(1, 25 - player.defense);
                 player.health -= damageTaken;
@@ -1096,20 +1046,18 @@ function updateBossProjectiles() {
         projectile.x += projectile.dx;
         projectile.y += projectile.dy;
 
-        // Remove projectiles that are off screen
         if (projectile.x < 0 || projectile.x > canvas.width ||
             projectile.y < 0 || projectile.y > canvas.height) {
             bossProjectiles.splice(i, 1);
             continue;
         }
 
-        // Check for collision with player
         const dist = Math.hypot(
             projectile.x - (player.x + player.width/2),
             projectile.y - (player.y + player.height/2)
         );
         if (dist < projectile.radius + player.width/3) {
-            player.health = 0; // Instant death on projectile hit
+            player.health = 0;
             bossProjectiles.splice(i, 1);
         }
     }
@@ -1138,11 +1086,11 @@ function updateBullets() {
                         player.coins += 50;
                         gainExp(100);
                         bossActive = false;
-                        dropItem(true); // Boss always drops an item
+                        dropItem(true); 
                     } else {
                         player.coins++;
                         gainExp(10);
-                        dropItem(false); // Regular enemies have a chance to drop
+                        dropItem(false);
                     }
                 }
                 break;
@@ -1183,12 +1131,10 @@ function spawnBoss() {
 }
 
 function drawLevelUpScreen() {
-    // Draw the background pattern
     const pattern = ctx.createPattern(otherBackgroundImage, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Add a semi-transparent overlay
     ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1217,20 +1163,17 @@ function handleLevelUpClicks(mouseX, mouseY) {
     const itemYStart = 220;
     const itemYGap = 100;
 
-    // Health upgrade
     if (mouseY > itemYStart - 50 && mouseY < itemYStart - 50 + itemHeight && mouseX > itemX && mouseX < itemX + itemWidth) {
         player.maxHealth += 20;
         player.health = player.maxHealth;
         player.skillPoints--;
     }
 
-    // Damage upgrade
     if (mouseY > itemYStart + itemYGap - 50 && mouseY < itemYStart + itemYGap - 50 + itemHeight && mouseX > itemX && mouseX < itemX + itemWidth) {
         player.damage += 0.2;
         player.skillPoints--;
     }
 
-    // Speed upgrade
     if (mouseY > itemYStart + itemYGap * 2 - 50 && mouseY < itemYStart + itemYGap * 2 - 50 + itemHeight && mouseX > itemX && mouseX < itemX + itemWidth) {
         player.speed += 0.5;
         player.skillPoints--;
@@ -1282,15 +1225,11 @@ function drawInventory() {
 
     const slotSize = 60;
     const slotMargin = 10;
-
-    // Equipment Slots
     const equipmentStartX = canvas.width / 2 - (slotSize * 3 + slotMargin * 2) / 2;
     const equipmentY = 150;
     ctx.font = '20px Arial';
     ctx.fillStyle = 'white';
     ctx.fillText('Equipment', canvas.width/2, equipmentY - 20);
-    
-    // Sword Slot
     ctx.strokeStyle = '#555';
     if (mouse.x > equipmentStartX && mouse.x < equipmentStartX + slotSize && mouse.y > equipmentY && mouse.y < equipmentY + slotSize) {
         ctx.strokeStyle = '#fff';
@@ -1304,7 +1243,6 @@ function drawInventory() {
         ctx.drawImage(image, equipmentStartX + 5, equipmentY + 5, slotSize - 10, slotSize - 10);
     }
 
-    // Chestplate Slot
     const chestplateX = equipmentStartX + slotSize + slotMargin;
     ctx.strokeStyle = '#555';
     if (mouse.x > chestplateX && mouse.x < chestplateX + slotSize && mouse.y > equipmentY && mouse.y < equipmentY + slotSize) {
@@ -1318,7 +1256,6 @@ function drawInventory() {
         ctx.drawImage(chestplateImage, chestplateX + 5, equipmentY + 5, slotSize - 10, slotSize - 10);
     }
 
-    // Shield Slot
     const shieldX = chestplateX + slotSize + slotMargin;
     ctx.strokeStyle = '#555';
     if (mouse.x > shieldX && mouse.x < shieldX + slotSize && mouse.y > equipmentY && mouse.y < equipmentY + slotSize) {
@@ -1332,7 +1269,6 @@ function drawInventory() {
         ctx.drawImage(shieldImage, shieldX + 5, equipmentY + 5, slotSize - 10, slotSize - 10);
     }
 
-    // Inventory Slots
     const inventorySlots = 10;
     const inventoryWidth = (slotSize + slotMargin) * 5 - slotMargin;
     const startX = canvas.width / 2 - inventoryWidth / 2;
@@ -1370,7 +1306,6 @@ function drawInventory() {
         }
     }
 
-    // Draw dragging item
     if (draggingItem) {
         ctx.fillStyle = rarities[draggingItem.rarity].color;
         ctx.fillRect(mouse.x - slotSize / 2, mouse.y - slotSize / 2, slotSize, slotSize);
@@ -1386,11 +1321,8 @@ function drawInventory() {
         }
         ctx.drawImage(image, mouse.x - slotSize / 2 + 5, mouse.y - slotSize / 2 + 5, slotSize - 10, slotSize - 10);
     }
-
-    // Tooltip
     drawTooltip();
 
-    // Salvage button
     const salvageButtonWidth = 50;
     const salvageButtonHeight = 20;
     for (let i = 0; i < player.inventory.length; i++) {
@@ -1420,14 +1352,12 @@ function getSlots() {
     const slotSize = 60;
     const slotMargin = 10;
 
-    // Equipment Slots
     const equipmentStartX = canvas.width / 2 - (slotSize * 3 + slotMargin * 2) / 2;
     const equipmentY = 150;
     slots.push({ x: equipmentStartX, y: equipmentY, type: 'equipment', slot: 'sword', item: player.equipment.sword });
     slots.push({ x: equipmentStartX + slotSize + slotMargin, y: equipmentY, type: 'equipment', slot: 'chestplate', item: player.equipment.chestplate });
     slots.push({ x: equipmentStartX + 2 * (slotSize + slotMargin), y: equipmentY, type: 'equipment', slot: 'shield', item: player.equipment.shield });
 
-    // Inventory Slots
     const inventorySlots = 10;
     const inventoryWidth = (slotSize + slotMargin) * 5 - slotMargin;
     const startX = canvas.width / 2 - inventoryWidth / 2;
@@ -1458,7 +1388,7 @@ function isValidDrop(item, slot) {
 
 function dropItem(isBoss) {
     let dropChance = Math.random();
-    if (!isBoss && dropChance > 0.3) return; // 30% drop chance for normal mobs
+    if (!isBoss && dropChance > 0.3) return;
 
     let rarityRoll = Math.random();
     let currentRarity = 'common';
@@ -1481,12 +1411,12 @@ function dropItem(isBoss) {
         itemType = 'chestplate';
     }
 
-    if (itemType === 'chestplate' && Math.random() < 0.3) { // 30% chance to be a shield instead of chestplate
+    if (itemType === 'chestplate' && Math.random() < 0.3) {
         itemType = 'shield';
     }
 
     let baseStat = 0;
-    let secondaryStat = 0; // For magestick mana regen
+    let secondaryStat = 0; 
     if (itemType === 'magestick') {
         if (currentRarity === 'common') { baseStat = 1; secondaryStat = 0.1; }
         if (currentRarity === 'uncommon') { baseStat = 2; secondaryStat = 0.2; }
@@ -1505,7 +1435,7 @@ function dropItem(isBoss) {
         if (currentRarity === 'rare') baseStat = 40;
         if (currentRarity === 'epic') baseStat = 80;
         if (currentRarity === 'legendary') baseStat = 160;
-    } else { // shield
+    } else {
         if (currentRarity === 'common') baseStat = 5;
         if (currentRarity === 'uncommon') baseStat = 10;
         if (currentRarity === 'rare') baseStat = 20;
@@ -1530,7 +1460,6 @@ function dropItem(isBoss) {
 }
 
 function updatePlayerStatsFromItems() {
-    // Reset stats to base stats before recalculating
     player.damage = player.baseDamage + (player.level > 1 ? (player.level - 1) * 0.2 : 0);
     player.defense = player.baseDefense;
     player.maxHealth = player.baseHealth;
@@ -1551,7 +1480,6 @@ function updatePlayerStatsFromItems() {
 }
 
 function startNewGame() {
-    // Reset game state but keep level and skill points
     const currentLevel = player.level;
     const currentExp = player.exp;
     const currentSkillPoints = player.skillPoints;
@@ -1562,18 +1490,17 @@ function startNewGame() {
         y: canvas.height / 2,
         dx: 0,
         dy: 0,
-        health: player.maxHealth, // Start with full health based on upgrades
+        health: player.maxHealth, 
         coins: 0,
-        speed: 5, // Reset speed, can be upgraded again
-        damage: player.baseDamage, // Reset to base damage
-        defense: player.baseDefense, // Reset to base defense
+        speed: 5,
+        damage: player.baseDamage,
+        defense: player.baseDefense,
         level: currentLevel,
         exp: currentExp,
         skillPoints: currentSkillPoints,
         inventory: [],
         equipment: { sword: null, chestplate: null, shield: null, magestick: null }
     };
-    // Reset player.upgrades to initial state
     player.upgrades = {
         speed: { cost: 10, increase: 1 },
         health: { cost: 20, increase: 20 },
@@ -1603,7 +1530,7 @@ Promise.all([
 
 
 function addNotification(message, type = 'info') {
-    notifications.push({ message, type, timer: 180 }); // 3 seconds at 60fps
+    notifications.push({ message, type, timer: 180 });
 }
 
 function drawNotifications() {
@@ -1651,7 +1578,6 @@ function drawTooltip() {
     const slotSize = 60;
     const slotMargin = 10;
 
-    // Check equipment slots
     const equipmentStartX = canvas.width / 2 - (slotSize * 2 + slotMargin) / 2;
     const equipmentY = 150;
     if (mouse.x > equipmentStartX && mouse.x < equipmentStartX + slotSize && mouse.y > equipmentY && mouse.y < equipmentY + slotSize) {
@@ -1666,7 +1592,6 @@ function drawTooltip() {
         hoveredItem = player.equipment.shield;
     }
 
-    // Check for salvage button clicks
     const salvageButtonWidth = 50;
     const salvageButtonHeight = 20;
     const inventorySlots = 10;
@@ -1691,7 +1616,7 @@ function drawTooltip() {
             player.coins += coinsGained;
             player.inventory.splice(i, 1);
             addNotification(`Salvaged for ${coinsGained} coins.`);
-            return; // Exit to prevent starting a drag
+            return;
         }
     }
 
@@ -1742,9 +1667,9 @@ function drawTooltip() {
     }
 
 
-document.addEventListener('keydown', keyDown);
-document.addEventListener('keyup', keyUp);
-document.addEventListener('click', (e) => {
+    document.addEventListener('keydown', keyDown);
+    document.addEventListener('keyup', keyUp);
+    document.addEventListener('click', (e) => {
     if (gameState === 'inventory') {
         const rect = canvas.getBoundingClientRect();
         mouse.x = e.clientX - rect.left;
@@ -1768,7 +1693,6 @@ document.addEventListener('click', (e) => {
             const buttonX = startX + col * (slotSize + slotMargin) + (slotSize - salvageButtonWidth) / 2;
             const buttonY = startY + row * (slotSize + slotMargin) + slotSize + 2;
 
-            // Check for salvage button clicks
             if (mouse.x > buttonX && mouse.x < buttonX + salvageButtonWidth && mouse.y > buttonY && mouse.y < buttonY + salvageButtonHeight) {
                 const item = player.inventory[i];
                 let coinsGained = 1;
@@ -1779,7 +1703,7 @@ document.addEventListener('click', (e) => {
                 player.coins += coinsGained;
                 player.inventory.splice(i, 1);
                 addNotification(`Salvaged for ${coinsGained} coins.`);
-                return; // Exit to prevent other actions
+                return;
             }
         }
     } else {
@@ -1847,7 +1771,6 @@ document.addEventListener('mouseup', (e) => {
         }
     }
 
-    // If not dropped in a valid slot, return to original slot
     if (!itemDropped) {
         if (dragItemOriginalSlot.type === 'equipment') {
             player.equipment[dragItemOriginalSlot.slot] = draggingItem;
@@ -1861,7 +1784,6 @@ document.addEventListener('mouseup', (e) => {
     updatePlayerStatsFromItems();
     updatePlayerStatsFromItems();
 
-    // Clean up empty slots in inventory
     player.inventory = player.inventory.filter(item => item !== null);
 });
 
